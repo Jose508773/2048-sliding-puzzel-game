@@ -286,13 +286,39 @@ function App() {
   const [grid, setGrid] = useState(() => initializeGame())
   const [score, setScore] = useState(0)
   const [bestScore, setBestScore] = useState(() => {
-    const saved = localStorage.getItem('2048-best-score')
-    return saved ? parseInt(saved) : 0
+    try {
+      const saved = localStorage.getItem('2048-best-score')
+      const parsed = saved ? parseInt(saved) : 0
+      return isNaN(parsed) ? 0 : parsed
+    } catch (error) {
+      console.warn('Failed to load best score from localStorage:', error)
+      return 0
+    }
   })
   const [gameOver, setGameOver] = useState(false)
   const [won, setWon] = useState(false)
   const [newTiles, setNewTiles] = useState([])
   const [mergedTiles, setMergedTiles] = useState([])
+  const [gamesPlayed, setGamesPlayed] = useState(() => {
+    try {
+      const saved = localStorage.getItem('2048-games-played')
+      const parsed = saved ? parseInt(saved) : 0
+      return isNaN(parsed) ? 0 : parsed
+    } catch (error) {
+      console.warn('Failed to load games played from localStorage:', error)
+      return 0
+    }
+  })
+  const [totalScore, setTotalScore] = useState(() => {
+    try {
+      const saved = localStorage.getItem('2048-total-score')
+      const parsed = saved ? parseInt(saved) : 0
+      return isNaN(parsed) ? 0 : parsed
+    } catch (error) {
+      console.warn('Failed to load total score from localStorage:', error)
+      return 0
+    }
+  })
   
   const handleMove = useCallback((direction) => {
     if (gameOver) return
@@ -308,7 +334,11 @@ function App() {
       // Update best score
       if (newScore > bestScore) {
         setBestScore(newScore)
-        localStorage.setItem('2048-best-score', newScore.toString())
+        try {
+          localStorage.setItem('2048-best-score', newScore.toString())
+        } catch (error) {
+          console.warn('Failed to save best score to localStorage:', error)
+        }
       }
       
       // Find new tile position
@@ -334,6 +364,17 @@ function App() {
       
       if (isGameOver(newGrid)) {
         setGameOver(true)
+        // Save game statistics
+        try {
+          const newGamesPlayed = gamesPlayed + 1
+          const newTotalScore = totalScore + newScore
+          setGamesPlayed(newGamesPlayed)
+          setTotalScore(newTotalScore)
+          localStorage.setItem('2048-games-played', newGamesPlayed.toString())
+          localStorage.setItem('2048-total-score', newTotalScore.toString())
+        } catch (error) {
+          console.warn('Failed to save game statistics to localStorage:', error)
+        }
       }
     }
   }, [grid, gameOver, won, score, bestScore])
@@ -372,6 +413,21 @@ function App() {
     setNewTiles([])
     setMergedTiles([])
   }
+
+  const clearAllData = () => {
+    try {
+      localStorage.removeItem('2048-best-score')
+      localStorage.removeItem('2048-games-played')
+      localStorage.removeItem('2048-total-score')
+      setBestScore(0)
+      setGamesPlayed(0)
+      setTotalScore(0)
+      alert('All game data has been cleared!')
+    } catch (error) {
+      console.warn('Failed to clear localStorage:', error)
+      alert('Failed to clear game data. Please try again.')
+    }
+  }
   
   return (
     <div className="game-container">
@@ -391,6 +447,23 @@ function App() {
           <button onClick={resetGame} className="game-button">
             New Game
           </button>
+        </div>
+        
+        <div className="game-stats">
+          <div className="stat-item">
+            <span className="stat-label">Games Played:</span>
+            <span className="stat-value">{gamesPlayed}</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Total Score:</span>
+            <span className="stat-value">{totalScore.toLocaleString()}</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Average Score:</span>
+            <span className="stat-value">
+              {gamesPlayed > 0 ? Math.round(totalScore / gamesPlayed).toLocaleString() : '0'}
+            </span>
+          </div>
         </div>
       </div>
       
@@ -416,6 +489,9 @@ function App() {
       
       <div className="game-help">
         <p><strong>HOW TO PLAY:</strong> Use your arrow keys to move the tiles. When two tiles with the same number touch, they merge into one!</p>
+        <button onClick={clearAllData} className="clear-data-button">
+          Clear All Data
+        </button>
       </div>
       
       {won && (
