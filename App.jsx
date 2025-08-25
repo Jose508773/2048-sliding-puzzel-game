@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Button } from '@/components/ui/button.jsx'
 import './App.css'
 
 const GRID_SIZE = 4
@@ -375,12 +374,12 @@ function App() {
   }
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex flex-col items-center justify-center game-container">
-      <div className="text-center mb-6">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2 tracking-tight">2048</h1>
-        <p className="text-gray-600 mb-4 text-base md:text-lg">Join the numbers and get to the 2048 tile!</p>
+    <div className="game-container">
+      <div className="game-header">
+        <h1 className="game-title">2048</h1>
+        <p className="game-subtitle">Join the numbers and get to the 2048 tile!</p>
         
-        <div className="flex items-center justify-center gap-2 md:gap-4 mb-4 flex-wrap">
+        <div className="game-controls">
           <div className="score-container">
             <div className="score-label">Score</div>
             <div className="score-value">{score.toLocaleString()}</div>
@@ -389,16 +388,16 @@ function App() {
             <div className="score-label">Best</div>
             <div className="score-value">{bestScore.toLocaleString()}</div>
           </div>
-          <Button onClick={resetGame} className="game-button">
+          <button onClick={resetGame} className="game-button">
             New Game
-          </Button>
+          </button>
         </div>
       </div>
       
       <GameBoard grid={grid} newTiles={newTiles} mergedTiles={mergedTiles} />
       
-      <div className="mt-6 text-center">
-        <p className="text-gray-600 mb-3 text-sm">Use arrow keys or buttons below to move tiles</p>
+      <div className="game-instructions">
+        <p className="instruction-text">Use arrow keys or buttons below to move tiles</p>
         <div className="control-buttons">
           <button onClick={() => handleMove('up')} className="control-button control-up">
             ↑
@@ -415,23 +414,23 @@ function App() {
         </div>
       </div>
       
-      <div className="mt-4 text-center text-xs md:text-sm text-gray-500 max-w-md px-4">
+      <div className="game-help">
         <p><strong>HOW TO PLAY:</strong> Use your arrow keys to move the tiles. When two tiles with the same number touch, they merge into one!</p>
       </div>
       
       {won && (
         <div className="game-modal">
           <div className="modal-content">
-            <h2 className="text-2xl md:text-3xl font-bold text-yellow-600 mb-4">🎉 You Win!</h2>
-            <p className="text-gray-600 mb-4 text-base md:text-lg">Congratulations! You reached the 2048 tile!</p>
-            <p className="text-gray-500 mb-6">Final Score: <strong>{score.toLocaleString()}</strong></p>
-            <div className="flex gap-3 justify-center flex-wrap">
-              <Button onClick={() => setWon(false)} variant="outline" className="px-4 md:px-6">
+            <h2 className="modal-title win">🎉 You Win!</h2>
+            <p className="modal-text">Congratulations! You reached the 2048 tile!</p>
+            <p className="modal-score">Final Score: <strong>{score.toLocaleString()}</strong></p>
+            <div className="modal-buttons">
+              <button onClick={() => setWon(false)} className="game-button">
                 Keep Playing
-              </Button>
-              <Button onClick={resetGame} className="px-4 md:px-6">
+              </button>
+              <button onClick={resetGame} className="game-button">
                 New Game
-              </Button>
+              </button>
             </div>
           </div>
         </div>
@@ -440,15 +439,15 @@ function App() {
       {gameOver && (
         <div className="game-modal">
           <div className="modal-content">
-            <h2 className="text-2xl md:text-3xl font-bold text-red-600 mb-4">😔 Game Over!</h2>
-            <p className="text-gray-600 mb-4 text-base md:text-lg">No more moves available.</p>
-            <p className="text-gray-500 mb-6">Final Score: <strong>{score.toLocaleString()}</strong></p>
+            <h2 className="modal-title game-over">😔 Game Over!</h2>
+            <p className="modal-text">No more moves available.</p>
+            <p className="modal-score">Final Score: <strong>{score.toLocaleString()}</strong></p>
             {score === bestScore && (
-              <p className="text-yellow-600 font-semibold mb-4">🏆 New Best Score!</p>
+              <p className="best-score">🏆 New Best Score!</p>
             )}
-            <Button onClick={resetGame} className="px-6 md:px-8">
+            <button onClick={resetGame} className="game-button">
               Try Again
-            </Button>
+            </button>
           </div>
         </div>
       )}
