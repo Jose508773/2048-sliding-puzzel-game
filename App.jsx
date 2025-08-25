@@ -188,8 +188,8 @@ const Tile = ({ value, row, col, boardSize, isNew = false, isMerged = false }) =
     return 'tile-super'
   }
   
-  // Calculate responsive tile size and position
-  const padding = boardSize <= 280 ? 4 : 6
+  // Calculate responsive tile size and position using CSS clamp values
+  const padding = Math.max(4, Math.min(6, boardSize * 0.02)) // Responsive padding
   const availableSpace = boardSize - (padding * 2)
   const tileSize = Math.floor((availableSpace - (GRID_SIZE - 1) * 2) / GRID_SIZE)
   const tileSpacing = Math.floor((availableSpace - tileSize * GRID_SIZE) / (GRID_SIZE - 1))
@@ -230,8 +230,8 @@ const GameBoard = ({ grid, newTiles = [], mergedTiles = [] }) => {
     return () => window.removeEventListener('resize', updateBoardSize)
   }, [])
   
-  // Calculate responsive grid cell size and position
-  const padding = boardSize <= 280 ? 4 : 6
+  // Calculate responsive grid cell size and position using CSS clamp values
+  const padding = Math.max(4, Math.min(6, boardSize * 0.02)) // Responsive padding
   const availableSpace = boardSize - (padding * 2)
   const cellSize = Math.floor((availableSpace - (GRID_SIZE - 1) * 2) / GRID_SIZE)
   const cellSpacing = Math.floor((availableSpace - cellSize * GRID_SIZE) / (GRID_SIZE - 1))
